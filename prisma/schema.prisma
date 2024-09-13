@@ -1,0 +1,149 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+    provider = "prisma-client-js"
+}
+
+datasource db {
+    provider = "postgresql"
+    // NOTE: When using mysql or sqlserver, uncomment the @db.Text annotations in model Account below
+    // Further reading:
+    // https://next-auth.js.org/adapters/prisma#create-the-prisma-schema
+    // https://www.prisma.io/docs/reference/api-reference/prisma-schema-reference#string
+    url      = env("DATABASE_URL")
+}
+
+model Example {
+    id        String   @id @default(cuid())
+    createdAt DateTime @default(now())
+    updatedAt DateTime @updatedAt
+}
+
+// Necessary for Next auth
+model Account {
+    id                String  @id @default(cuid())
+    userId            String
+    type              String
+    provider          String
+    providerAccountId String
+    refresh_token     String? @db.Text
+    access_token      String? @db.Text
+    expires_at        Int?
+    token_type        String?
+    scope             String?
+    id_token          String? @db.Text
+    session_state     String?
+    user              User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+    @@unique([provider, providerAccountId])
+}
+
+model Session {
+    id           String   @id @default(cuid())
+    sessionToken String   @unique
+    userId       String
+    expires      DateTime
+    user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model VerificationToken {
+    identifier String
+    token      String   @unique
+    expires    DateTime
+
+    @@unique([identifier, token])
+}
+
+model User {
+    id            String             @id @default(cuid())
+    name          String?
+    email         String?            @unique
+    emailVerified DateTime?
+    image         String?
+    accounts      Account[]
+    sessions      Session[]
+    products      Product[]          @relation("author")
+    message       Message[]
+    conversations ConversationUser[]
+    carts         Cart[]
+}
+
+model Cart {
+    id        String     @id @default(cuid())
+    userId    String
+    user      User       @relation(fields: [userId], references: [id])
+    items     CartItem[]
+    totalCart Int
+    createdAt DateTime   @default(now())
+    updatedAt DateTime   @updatedAt
+}
+
+model CartItem {
+    id        String  @id @default(cuid())
+    cartId    String
+    cart      Cart    @relation(fields: [cartId], references: [id], onDelete: Cascade)
+    productId String
+    product   Product @relation(fields: [productId], references: [id], onDelete: Cascade)
+    quantity  Int
+}
+
+model Product {
+    id          String     @id @default(cuid())
+    createdAt   DateTime   @default(now())
+    updatedAt   DateTime   @updatedAt
+    name        String
+    price       Int
+    description String
+    authorId    String
+    condition   String
+    location    String
+    category    String
+    image       Image[]
+    author      User       @relation("author", fields: [authorId], references: [id])
+    cartItems   CartItem[]
+}
+
+model Image {
+    id        String  @id @default(cuid())
+    url       String
+    productId String
+    product   Product @relation(fields: [productId], references: [id], onDelete: Cascade)
+}
+
+model ConversationUser {
+    userId         String
+    conversationId String
+    createdAt      DateTime     @default(now())
+    // lastRead DateTime?
+    user           User         @relation(fields: [userId], references: [id])
+    conversation   Conversation @relation(fields: [conversationId], references: [id], onDelete: Cascade)
+
+    @@unique([userId, conversationId])
+    @@index([conversationId])
+}
+
+model Conversation {
+    id                String             @id @default(cuid())
+    lastMessageId     String?            @unique
+    createdAt         DateTime           @default(now())
+    // title String?
+    messages          Message[]
+    lastMessage       Message?           @relation("lastMessage", fields: [lastMessageId], references: [id])
+    conversationUsers ConversationUser[]
+
+    @@index([lastMessageId])
+}
+
+model Message {
+    id                        String        @id @default(cuid())
+    message                   String
+    userId                    String
+    conversationId            String
+    createdAt                 DateTime      @default(now())
+    user                      User          @relation(fields: [userId], references: [id])
+    conversation              Conversation  @relation(fields: [conversationId], references: [id], onDelete: Cascade)
+    lastMessageOfConversation Conversation? @relation("lastMessage")
+
+    @@index([conversationId])
+}
