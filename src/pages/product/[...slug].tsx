@@ -2,7 +2,7 @@ import { NextPage } from "next";
 import Head from "next/head";
 import { useEffect, useState } from "react";
 import Footer from "~/components/home/footer";
-import ProductDetails from "~/components/product/ProductDetails";
+import ProductDetails from "~/components/product/product-details";
 import { useGetProductById } from "~/hooks/useGetProductById";
 
 const ProductView: NextPage = () => {
@@ -22,7 +22,7 @@ const ProductView: NextPage = () => {
       <div className="flex h-screen items-center justify-center bg-[#E9E9E9]">
         Loading...
       </div>
-    ); // Replace with your loading UI
+    );
   }
 
   const handleThumbnailClick = (thumbnailUrl: string) => {
