@@ -68,7 +68,6 @@ const Chat: NextPage = () => {
       </Head>
       <div className="bg-[#F4F4F0]">
         <main className="container mx-auto flex h-screen flex-col py-4">
-        
           <div className="flex h-full w-full justify-between overflow-hidden rounded-sm border border-black">
             <div className="flex w-[25%] flex-col border-r border-black ">
               <ConversationList
