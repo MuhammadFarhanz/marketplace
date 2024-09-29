@@ -7,7 +7,7 @@
     "dev:ws": "cross-env NODE_ENV=development tsx --watch src/server/wsServer/wsServer.ts --tsconfig tsconfig.server.json",
     "dev:next": "next dev",
     "dev": "run-p dev:*",
-    "postinstall": "prisma generate",
+    "postinstall": "prisma db push && prisma generate",
     "lint": "next lint",
     "start": "next start"
   },
