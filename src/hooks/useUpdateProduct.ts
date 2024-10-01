@@ -1,18 +1,20 @@
-import { api } from '~/utils/api';
+import { useToast } from "~/components/ui/use-toast";
+import { api } from "~/utils/api";
 
 export const useUpdateProduct = () => {
-  const createProductMutation = api.product.update.useMutation();
+  const { toast } = useToast();
 
-  const updateProduct = async (id:any, newProductData:any) => {
-
-    try {
-      const data = await createProductMutation.mutateAsync({id, newProductData});
-      
-    } catch (error) {
-
-      console.error('Failed to updata product:', error);
-    }
-  };
-
-  return updateProduct;
+  return api.product.update.useMutation({
+    onSuccess() {
+      toast({
+        title: "Product updated succesfully",
+      });
+    },
+    onError() {
+      toast({
+        variant: "destructive",
+        title: "Uh oh! Something went wrong.",
+      });
+    },
+  });
 };

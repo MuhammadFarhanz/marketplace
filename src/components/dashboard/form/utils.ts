@@ -1,16 +1,29 @@
-// components/FormUtils.ts
 import * as yup from "yup";
-
 export interface ProductFormValues {
-  id: string | number | undefined;
+  id: string;
   name: string;
   description: string;
+  image: any;
   price: number;
-  image: string[];
   condition: string;
-  location: string;
   category: string;
+  location: string;
 }
+
+// export type Product = {
+// name: string;
+// id: string;
+// description: string;
+// image: {
+//   id: string;
+//   url: string;
+//   productId: string;
+// }[];
+// price: number;
+// condition: string;
+// category: string;
+// location: string;
+// };
 
 export const productValidationSchema = yup.object().shape({
   name: yup.string().required("Name is required"),

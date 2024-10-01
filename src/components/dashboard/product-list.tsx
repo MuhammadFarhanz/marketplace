@@ -25,55 +25,31 @@ import {
 } from "~/components/ui/table";
 import { useDeleteProduct } from "~/hooks/useDeleteProduct";
 import EditProductModal from "./edit-product";
+import { ProductFormValues } from "./form/utils";
 
-export type Product = {
-  name: string;
-  id: string;
-  description: string;
-  image: {
-    id: string;
-    url: string;
-    productId: string;
-  }[];
-  price: number;
-  condition: string;
-  category: string;
-  location: string;
+// export type Product = {
+//   name: string;
+//   id: string;
+//   description: string;
+//   image: {
+//     id: string;
+//     url: string;
+//     productId: string;
+//   }[];
+//   price: number;
+//   condition: string;
+//   category: string;
+//   location: string;
+// };
+
+type Props = {
+  product: ProductFormValues;
 };
 
-type ProductCardProps = {
-  product: Product;
-};
-
-const EditDialog: React.FC<ProductCardProps> = ({ product }) => {
-  return (
-    <Dialog>
-      <DialogTrigger asChild>
-        <DropdownMenuItem>
-          <FilePenIcon className="mr-2 h-4 w-4" />
-          Edit
-        </DropdownMenuItem>
-      </DialogTrigger>
-      <DialogContent>
-        <EditProductModal product={product} />
-      </DialogContent>
-    </Dialog>
-  );
-};
-
-const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
-  const [isDialogOpen, setIsDialogOpen] = useState(false);
+const ProductCard: React.FC<Props> = ({ product }) => {
+  const [isOpen, setIsOpen] = useState(false);
   const deleteProduct = useDeleteProduct();
 
-  const handleConfirmDelete = async () => {
-    try {
-      await deleteProduct(product?.id);
-      // setIsDeleteModalOpen(false);
-      // refetch();
-    } catch (error) {
-      console.log(error);
-    }
-  };
   return (
     <TableRow>
       <TableCell>
@@ -84,7 +60,7 @@ const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
         />
       </TableCell>
       <TableCell className="">
-        <div>{product?.name}</div>
+        <div className="text-lg font-medium">{product?.name}</div>
         <a href="#" className="text-sm text-gray-500">
           marketplace.com/product/{product.name}
         </a>
@@ -103,7 +79,7 @@ const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
             <MoreIcon className="h-5 w-5" />
           </DropdownMenuTrigger>
           <DropdownMenuContent className="w-44 rounded-sm border border-black p-0">
-            <DropdownMenuItem onClick={() => setIsDialogOpen(true)}>
+            <DropdownMenuItem onClick={() => setIsOpen(true)}>
               <FilePenIcon className="mr-2 h-4 w-4" />
               Edit
             </DropdownMenuItem>
@@ -118,16 +94,20 @@ const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
           </DropdownMenuContent>
         </DropdownMenu>
       </TableCell>
-      <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
+      <Dialog open={isOpen} onOpenChange={setIsOpen}>
         <DialogContent className="h-auto">
-          <EditProductModal product={product} />
+          <EditProductModal
+            isOpen={isOpen}
+            setIsOpen={setIsOpen}
+            product={product}
+          />
         </DialogContent>
       </Dialog>
     </TableRow>
   );
 };
 
-const ProductList: React.FC<{ products: Product[] }> = ({ products }) => {
+const ProductList: React.FC<any> = ({ products }) => {
   return (
     <Table className="table-auto">
       <TableHeader>
@@ -141,8 +121,8 @@ const ProductList: React.FC<{ products: Product[] }> = ({ products }) => {
         </TableRow>
       </TableHeader>
       <TableBody>
-        {products.map((product) => (
-          <ProductCard key={product.id} product={product} />
+        {products?.map((product: any) => (
+          <ProductCard key={product?.id} product={product} />
         ))}
       </TableBody>
     </Table>

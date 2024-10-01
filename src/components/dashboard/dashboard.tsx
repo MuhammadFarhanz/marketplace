@@ -20,19 +20,17 @@ export default function Dashboard() {
 
   return (
     <Dialog open={isOpen} onOpenChange={setIsOpen}>
-      <div className="relative flex h-[95vh] overflow-visible">
-        <DialogContent className="h-auto">
-          <AddProduct />
-        </DialogContent>
+      <div className="relative flex min-h-screen overflow-visible">
+        <AddProduct setIsOpen={setIsOpen} isOpen={isOpen} />
 
-        <aside className=" w-64 border-r border-black text-white">
-          <nav className="flex h-full flex-col justify-between ">
+        <aside className="w-64 border-r border-black text-white">
+          <nav className="flex h-full flex-grow flex-col justify-between ">
             <div>
               {nav.map((value) => {
                 return (
                   <a
                     href="#"
-                    className="flex items-center space-x-3 border-b border-black px-6 py-4 text-black hover:bg-white hover:text-black"
+                    className="flex items-center space-x-3 border-b border-black px-6 py-4 text-black hover:bg-[#ffb2ef]  hover:text-black"
                   >
                     <span>{value}</span>
                   </a>
@@ -50,7 +48,7 @@ export default function Dashboard() {
         </aside>
         <div className="flex flex-1 flex-col p-8">
           <header className="flex items-center justify-between pb-6">
-            <h1 className="text-3xl font-bold">Products</h1>
+            <h1 className="text-3xl font-medium">Products</h1>
             <div className="flex items-center">
               <Input
                 type="search"
@@ -69,7 +67,7 @@ export default function Dashboard() {
               ) : (
                 <>
                   <ProductList products={products} />
-                  <ProductPagination />
+                  {products.length > 8 && <ProductPagination />}
                 </>
               )}
             </div>

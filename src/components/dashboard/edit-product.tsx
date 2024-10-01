@@ -5,7 +5,7 @@ import { useUpdateProduct } from "~/hooks/useUpdateProduct";
 import { useImageUpload } from "~/hooks/useImageUpload";
 import { categoryOptions } from "~/constants/categoryOptions";
 import { cityOptions } from "~/constants/cityOption";
-import { productValidationSchema } from "./form/utils";
+import { ProductFormValues, productValidationSchema } from "./form/utils";
 import FormField from "./form/form-field";
 import TextInput from "./form/text-input";
 import ErrorField from "./error-field";
@@ -15,13 +15,13 @@ import ImageForm from "./form/image-form";
 import { Button } from "../ui/button";
 
 interface Props {
-  onClose?: () => void;
-  product: any;
-  refetch?: () => void;
+  product: ProductFormValues;
+  setIsOpen: (isOpen: boolean) => void;
+  isOpen: boolean;
 }
 
-const EditProductModal: React.FC<Props> = ({ onClose, product, refetch }) => {
-  const updateProduct = useUpdateProduct();
+const EditProductModal: React.FC<Props> = ({ product, setIsOpen, isOpen }) => {
+  const { mutate } = useUpdateProduct();
 
   const formik = useFormik({
     initialValues: {
@@ -40,23 +40,21 @@ const EditProductModal: React.FC<Props> = ({ onClose, product, refetch }) => {
       const { id, ...productData } = values;
 
       formik.setFieldValue("image", selectedImage);
-      try {
-        await updateProduct(id, {
-          name: productData.name,
-          description: productData.description,
-          price: productData.price,
-          category: productData.category,
-          location: productData.location,
-          image: selectedImage,
-        });
-        // onClose();
-        // refetch();
-        // Handle success if needed
-        console.log("Product updated successfully");
-      } catch (error) {
-        // Handle error if needed
-        console.error("Failed to update product:", error);
-      }
+
+      mutate(
+        {
+          id,
+          newProductData: {
+            ...productData,
+            image: selectedImage,
+          },
+        },
+        {
+          onSuccess: () => {
+            setIsOpen(!isOpen);
+          },
+        }
+      );
     },
   });
 
