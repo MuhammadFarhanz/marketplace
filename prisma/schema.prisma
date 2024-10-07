@@ -110,6 +110,17 @@ model Image {
     url       String
     productId String
     product   Product @relation(fields: [productId], references: [id], onDelete: Cascade)
+    file      File?
+}
+
+model File {
+    id       String @id @default(uuid())
+    url      String
+    fileName String
+    fileType String
+    fileSize Int
+    imageId  String @unique
+    image    Image  @relation(fields: [imageId], references: [id], onDelete: Cascade)
 }
 
 model ConversationUser {
