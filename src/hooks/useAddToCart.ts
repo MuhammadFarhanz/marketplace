@@ -1,16 +1,20 @@
+import { useToast } from "~/components/ui/use-toast";
 import { api } from "~/utils/api";
 
 export const useAddToCart = () => {
-  const add = api.product.addToCart.useMutation();
+  const { toast } = useToast();
 
-  const addToCart = async ({ productId }: any) => {
-    console.log(productId);
-    try {
-      await add.mutateAsync({ productId });
-    } catch (error) {
-      console.error("Failed to create product:", error);
-    }
-  };
-
-  return addToCart;
+  return api.product.addToCart.useMutation({
+    onSuccess() {
+      toast({
+        title: "Product added to cart succesfully",
+      });
+    },
+    onError() {
+      toast({
+        variant: "destructive",
+        title: "Uh oh! Something went wrong.",
+      });
+    },
+  });
 };

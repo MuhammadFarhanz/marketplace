@@ -1,9 +1,9 @@
 import Link from "next/link";
 import { Button } from "~/components/ui/button";
 import { useDeleteCart } from "~/hooks/useDeleteCart";
-import { useGetCart } from "~/hooks/useGetCart";
 import { Spinner } from "~/components/ui/spinner";
 import React, { useEffect, useState } from "react";
+import { api } from "~/utils/api";
 
 const SKELETON_DELAY = 500;
 
@@ -67,8 +67,8 @@ const ProductCard = ({ item, handleRemove }: any) => (
 );
 
 function Index() {
-  const { cart, isLoading, error } = useGetCart();
-  const { deleteCart } = useDeleteCart();
+  const { data: cart, isLoading, refetch } = api.product.getCart.useQuery();
+  const { mutate } = useDeleteCart();
   const [showSkeleton, setShowSkeleton] = useState(true);
 
   useEffect(() => {
@@ -86,8 +86,7 @@ function Index() {
   }, [isLoading, cart?.length]);
 
   const handleRemove = (productId: string) => {
-    deleteCart(productId);
-    setShowSkeleton(true);
+    mutate({ productId: productId });
   };
 
   const subtotal =

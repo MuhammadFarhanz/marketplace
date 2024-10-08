@@ -4,7 +4,7 @@ import { Button } from "../ui/button";
 
 export default function Footer() {
   return (
-    <footer className="mt-4 bg-black py-12 text-white">
+    <footer className="sticky bottom-0 left-0 -z-10 mt-4 h-80 w-full bg-black py-12 text-white">
       <div className="container grid max-w-7xl grid-cols-1 gap-8 sm:grid-cols-2 md:grid-cols-4">
         <div className="flex flex-col items-start gap-4">
           <Link href="#" className="flex items-center gap-2" prefetch={false}>

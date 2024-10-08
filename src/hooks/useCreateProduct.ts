@@ -1,30 +1,18 @@
-// import { api } from "~/utils/api";
-
-// export const useCreateProduct = () => {
-//   const { isSuccess, mutateAsync } = api.product.create.useMutation();
-
-//   const createProduct = async (productData: any) => {
-//     try {
-//       await mutateAsync(productData);
-//     } catch (error) {
-//       console.error("Failed to create product:", error);
-//     }
-//   };
-
-//   return { createProduct, isSuccess };
-// };
-
+import { useQueryClient } from "@tanstack/react-query";
+import { getQueryKey } from "@trpc/react-query";
 import { useToast } from "~/components/ui/use-toast";
 import { api } from "~/utils/api";
 
 export const useCreateProduct = () => {
   const { toast } = useToast();
+  const queryClient = useQueryClient();
 
   return api.product.create.useMutation({
     onSuccess() {
       toast({
         title: "Product created succesfully",
       });
+      queryClient.invalidateQueries(getQueryKey(api.product.getAllProductById));
     },
     onError() {
       toast({

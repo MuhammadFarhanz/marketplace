@@ -1,39 +1,24 @@
+import { useQueryClient } from "@tanstack/react-query";
+import { getQueryKey } from "@trpc/react-query";
+import { useToast } from "~/components/ui/use-toast";
 import { api } from "~/utils/api";
 
 export const useDeleteCart = () => {
-  const mutation = api.product.deleteCart.useMutation();
+  const { toast } = useToast();
+  const queryClient = useQueryClient();
 
-  const deleteCart = async (id: any) => {
-    console.log(id, "anjir");
-    try {
-      await mutation.mutateAsync({ productId: id });
-      console.log(" deleted from the cart");
-    } catch (error) {
-      console.error("Failed to delete cart items:", error);
-    }
-  };
-
-  return {
-    deleteCart,
-    isLoading: mutation.isLoading,
-    error: mutation.error,
-  };
+  return api.product.deleteCart.useMutation({
+    onSuccess() {
+      toast({
+        title: "Product deleted succesfully",
+      });
+      queryClient.invalidateQueries(getQueryKey(api.product.getCart));
+    },
+    onError() {
+      toast({
+        variant: "destructive",
+        title: "Uh oh! Something went wrong.",
+      });
+    },
+  });
 };
-
-// import { api } from '~/utils/api';
-
-// export const useDeleteProduct = () => {
-//   const createProductMutation = api.product.delete.useMutation();
-
-//   const deleteProduct = async (id:any) => {
-//     try {
-//        await createProductMutation.mutateAsync({ id });
-
-//     } catch (error) {
-//       // Handle error if needed
-//       console.error('Failed to delete product:', error);
-//     }
-//   };
-
-//   return deleteProduct;
-// };

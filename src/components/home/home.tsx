@@ -111,7 +111,7 @@ function ProductPage() {
 
   return (
     <>
-      <ProductLayout className="min-h-auto">
+      <ProductLayout className="min-h-screen">
         <ProductList products={products} isLoading={isLoading} />
       </ProductLayout>
       <Footer />

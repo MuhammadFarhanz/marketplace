@@ -1,8 +1,8 @@
 import { NextPage } from "next";
 import Head from "next/head";
 import { useEffect, useState } from "react";
-import Footer from "~/components/home/footer";
 import ProductDetails from "~/components/product/product-details";
+import { Skeleton } from "~/components/ui/skeleton";
 import { useGetProductById } from "~/hooks/useGetProductById";
 
 const ProductView: NextPage = () => {
@@ -17,14 +17,6 @@ const ProductView: NextPage = () => {
     }
   }, [data]);
 
-  if (!data) {
-    return (
-      <div className="flex h-screen items-center justify-center bg-[#E9E9E9]">
-        Loading...
-      </div>
-    );
-  }
-
   const handleThumbnailClick = (thumbnailUrl: string) => {
     setMainImage(thumbnailUrl);
   };
@@ -38,16 +30,57 @@ const ProductView: NextPage = () => {
       </Head>
       <main className="font-custom flex min-h-screen flex-col">
         <div className="container m-4 mx-auto sm:mt-10">
-          <ProductDetails
-            product={data}
-            mainImage={mainImage}
-            onThumbnailClick={handleThumbnailClick}
-          />
+          {data ? (
+            <ProductDetails
+              product={data}
+              mainImage={mainImage}
+              onThumbnailClick={handleThumbnailClick}
+            />
+          ) : (
+            <ProductDetailsSkeleton />
+          )}
         </div>
-        <Footer />
       </main>
     </>
   );
 };
 
 export default ProductView;
+
+const ProductDetailsSkeleton = () => {
+  return (
+    <>
+      <div className="flex flex-col justify-between md:gap-10 lg:flex-row lg:gap-16">
+        <div className="flex flex-col gap-6 lg:w-2/4">
+          <Skeleton className="aspect-square h-full w-full" />{" "}
+          <div className="flex h-24 flex-row justify-center sm:items-end">
+            {Array(4)
+              .fill(0)
+              .map((_, index) => (
+                <Skeleton key={index} className="mr-3 h-14 w-14" />
+              ))}
+          </div>
+        </div>
+
+        <div className="flex flex-col gap-4 p-4 lg:w-2/4">
+          <Skeleton className="h-8 w-3/4" />
+          <Skeleton className="h-6 w-1/2" />
+          <Skeleton className="h-4 w-1/3" />
+
+          <Skeleton className="h-full w-full" />
+          <div className="flex items-center border-0 pb-3 pt-3">
+            <Skeleton className="h-10 w-10 rounded-full" />{" "}
+            <div className="flex flex-col space-y-2">
+              <Skeleton className="ml-4 h-4 w-24" />{" "}
+              <Skeleton className="ml-4 h-4 w-16" />{" "}
+            </div>
+          </div>
+          <div className="flex flex-row items-center justify-center gap-12 sm:justify-normal">
+            <Skeleton className="h-10 w-32" />
+            <Skeleton className="h-10 w-full" />
+          </div>
+        </div>
+      </div>
+    </>
+  );
+};

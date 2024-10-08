@@ -14,11 +14,11 @@ const ProductLayout = ({
   return (
     <main
       className={clsx(
-        "container mx-auto flex flex-col items-center p-0",
+        "relative mx-auto flex-col items-center bg-[#F4F4F0] p-0",
         className
       )}
     >
-      <div className="flex min-h-screen w-full flex-row justify-center space-x-10">
+      <div className="min-h-auto container flex w-full flex-row justify-center space-x-10">
         {isFilterSidebarOn && <FilterSidebar />}
         <div className="w-full pt-4">
           <div

@@ -13,6 +13,7 @@ import {
 import { DropdownMenuSeparator } from "../ui/dropdown-menu";
 import { Separator } from "../ui/separator";
 import { Skeleton } from "../ui/skeleton";
+import { Button } from "../ui/button";
 
 const DropdownContent = ({ sessionData }: any) => (
   <>
@@ -60,15 +61,15 @@ const AuthenticatedLinks = () => (
     <NavigationMenuItem>
       <Link
         href="/cart"
-        className="flex h-10 w-8 cursor-pointer items-center justify-center hover:text-purple-500 sm:w-10"
+        className="flex h-10 w-8 cursor-pointer items-center justify-center hover:text-pink-500 sm:w-10"
       >
         <ShoppingCart className="h-7 w-7" strokeWidth={1.5} />
       </Link>
     </NavigationMenuItem>
     <NavigationMenuItem>
       <Link
-        href="/chat"
-        className="flex h-10 w-8 cursor-pointer items-center justify-center hover:text-purple-500 sm:w-10"
+        href="#"
+        className="flex h-10 w-8 cursor-pointer items-center justify-center hover:text-pink-500 sm:w-10"
       >
         <Bell className="h-7 w-7" strokeWidth={1.5} />
       </Link>
@@ -76,7 +77,7 @@ const AuthenticatedLinks = () => (
     <NavigationMenuItem>
       <Link
         href="/chat"
-        className="mr-4 flex h-10 w-8 cursor-pointer items-center justify-center hover:text-purple-500 sm:w-10"
+        className="mr-4 flex h-10 w-8 cursor-pointer items-center justify-center hover:text-pink-500 sm:w-10"
       >
         <Mail className="h-7 w-7" strokeWidth={1.5} />
       </Link>
@@ -86,16 +87,9 @@ const AuthenticatedLinks = () => (
 
 const SignInButton = () => (
   <NavigationMenuItem>
-    <button
-      className="bg-black duration-200 sm:ml-0 sm:w-full"
-      onClick={() => signIn()}
-    >
-      <div className="flex w-full -translate-x-1 -translate-y-1 items-center border-2 border-slate-900 bg-white px-2 py-1 duration-200 hover:translate-x-0 hover:translate-y-0 active:translate-x-0 active:translate-y-0 dark:border-black sm:px-4 sm:py-2">
-        <h4 className="duration-200">
-          <div className="flex items-center justify-start">SIGN IN</div>
-        </h4>
-      </div>
-    </button>
+    <Button onClick={() => signIn()}>
+      <span className="text-lg font-semibold">sign in</span>
+    </Button>
   </NavigationMenuItem>
 );
 

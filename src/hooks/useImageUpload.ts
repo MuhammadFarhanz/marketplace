@@ -1,4 +1,3 @@
-// hooks/useImageUpload.ts
 import { FormikProps } from "formik";
 import { useState } from "react";
 import { ProductFormValues } from "~/components/dashboard/form/utils";
@@ -9,28 +8,28 @@ interface UseImageUploadProps {
 
 export const useImageUpload = ({ formik }: UseImageUploadProps) => {
   const [selectedImage, setSelectedImage] = useState<string[]>([]);
+  const [files, setFiles] = useState<File[]>([]);
 
-  const handleImageChange = (
-    event: React.ChangeEvent<HTMLInputElement>,
-    index: number
-  ) => {
-    if (event.currentTarget.files && event.currentTarget.files[0]) {
-      const file = event.currentTarget.files[0];
-      const reader = new FileReader();
+  const handleImageChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    if (event.currentTarget.files) {
+      const newFiles = Array.from(event.currentTarget.files);
+      const newImageUrls = newFiles.map((file) => URL.createObjectURL(file));
 
-      reader.onload = () => {
-        const imageString = reader.result as string;
-        setSelectedImage((previousImages) => {
-          const updatedImages = [...previousImages];
-          updatedImages[index] = imageString;
+      setSelectedImage((previousImages) => [
+        ...previousImages,
+        ...newImageUrls,
+      ]);
 
-          formik.setFieldValue("image", updatedImages);
+      setFiles((previousFiles) => [...previousFiles, ...newFiles]);
 
-          return updatedImages;
-        });
-      };
-
-      reader.readAsDataURL(file);
+      formik.setFieldValue("image", [
+        ...(formik?.values?.image || []),
+        ...newImageUrls,
+      ]);
+      formik.setFieldValue("file", [
+        ...(formik?.values?.file || []),
+        ...newFiles,
+      ]);
     }
   };
 
@@ -38,9 +37,23 @@ export const useImageUpload = ({ formik }: UseImageUploadProps) => {
     setSelectedImage((previousImages) => {
       const updatedImages = [...previousImages];
       updatedImages.splice(index, 1);
-      formik.setFieldValue("image", updatedImages);
       return updatedImages;
     });
+
+    setFiles((previousFiles) => {
+      const updatedFiles = [...previousFiles];
+      updatedFiles.splice(index, 1);
+      return updatedFiles;
+    });
+
+    formik.setFieldValue(
+      "image",
+      formik?.values?.image?.filter((_: any, i: any) => i !== index)
+    );
+    formik.setFieldValue(
+      "file",
+      formik?.values?.file?.filter((_: any, i: any) => i !== index)
+    );
   };
 
   return {
@@ -48,5 +61,6 @@ export const useImageUpload = ({ formik }: UseImageUploadProps) => {
     setSelectedImage,
     handleImageChange,
     handleImageDelete,
+    files,
   };
 };

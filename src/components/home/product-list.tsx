@@ -77,9 +77,7 @@ const ProductList = ({
               style={{ aspectRatio: "400/300", objectFit: "cover" }}
             />
             <div className="space-y-4 p-[7px] py-2">
-              <h5 className="truncate font-medium tracking-normal sm:text-lg">
-                {product.name}
-              </h5>
+              <h5 className="truncate font-medium">{product.name}</h5>
               <div className="flex items-center space-x-2">
                 <Avatar className="h-5 w-5">
                   <AvatarImage src={product?.author?.image} />
@@ -91,7 +89,7 @@ const ProductList = ({
               </div>
             </div>
             <div className="flex h-12 items-center border-t border-black px-2">
-              <span className="text-sm font-semibold sm:text-lg">
+              <span className="text-sm font-medium sm:text-base">
                 Rp{" "}
                 {product?.price
                   ?.toString()

@@ -16,11 +16,11 @@ const ProductDetails = ({
   mainImage: string | undefined;
   onThumbnailClick: (thumbnailUrl: string) => void;
 }) => {
-  const addToCart = useAddToCart();
+  const { mutate } = useAddToCart();
   const { data, isLoading } = api.product.getRandomProducts.useQuery();
 
   const handleAddToCart = async () => {
-    await addToCart({ productId: product.id });
+    await mutate({ productId: product.id });
     toast.success("Added product to cart");
   };
 
@@ -30,7 +30,7 @@ const ProductDetails = ({
         <div className="flex flex-col gap-6 lg:w-2/4">
           <img
             src={mainImage || ""}
-            alt={product.name}
+            alt={product?.name}
             className="aspect-square h-full w-full object-cover"
           />
           <div className="flex h-24 flex-row justify-center sm:items-end">
@@ -111,11 +111,9 @@ const ProductDetails = ({
           </div>
         </div>
 
-        <div>
-          <ProductLayout isFilterSidebarOn={false}>
-            <ProductList products={data} isLoading={isLoading} />
-          </ProductLayout>
-        </div>
+        <ProductLayout className="z-0 min-h-0" isFilterSidebarOn={false}>
+          <ProductList products={data} isLoading={isLoading} />
+        </ProductLayout>
       </div>
     </>
   );
