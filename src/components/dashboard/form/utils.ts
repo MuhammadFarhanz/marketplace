@@ -1,3 +1,4 @@
+import axios from "axios";
 import * as yup from "yup";
 export interface ProductFormValues {
   id: string;
@@ -8,22 +9,8 @@ export interface ProductFormValues {
   condition: string;
   category: string;
   location: string;
+  file: any;
 }
-
-// export type Product = {
-// name: string;
-// id: string;
-// description: string;
-// image: {
-//   id: string;
-//   url: string;
-//   productId: string;
-// }[];
-// price: number;
-// condition: string;
-// category: string;
-// location: string;
-// };
 
 export const productValidationSchema = yup.object().shape({
   name: yup.string().required("Name is required"),
@@ -42,3 +29,28 @@ export const productValidationSchema = yup.object().shape({
   location: yup.string().required("Location is required"),
   category: yup.string().required("Category is required"),
 });
+
+export async function uploadFiles(presignedUrls: any[], files: File[]) {
+  return files.map((file, index) => {
+    const presignedUrl = presignedUrls[index];
+    if (presignedUrl && presignedUrl.url) {
+      return axios.put(presignedUrl.url, file, {
+        headers: {
+          "Content-Type": file.type,
+        },
+      });
+    } else {
+      console.error(`Missing presigned URL for file: ${file.name}`);
+      return Promise.reject(`Missing presigned URL for file: ${file.name}`);
+    }
+  });
+}
+
+export function processFileData(presignedUrls: any[], files: File[]) {
+  return presignedUrls.map((presignedUrl, index) => ({
+    key: presignedUrl.key,
+    fileName: files[index]?.name,
+    fileType: files[index]?.type,
+    fileSize: files[index]?.size,
+  }));
+}

@@ -48,7 +48,7 @@ export default function Dashboard() {
         </aside>
         <div className="flex flex-1 flex-col p-8">
           <header className="flex items-center justify-between pb-6">
-            <h1 className="text-3xl font-medium">Products</h1>
+            <span className="text-2xl font-semibold">Products</span>
             <div className="flex items-center">
               <Input
                 type="search"

@@ -1,13 +1,7 @@
 import React, { useState } from "react";
 
 import { Badge } from "~/components/ui/badge";
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogTitle,
-  DialogTrigger,
-} from "~/components/ui/dialog";
+import { Dialog } from "~/components/ui/dialog";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -27,28 +21,13 @@ import { useDeleteProduct } from "~/hooks/useDeleteProduct";
 import EditProductModal from "./edit-product";
 import { ProductFormValues } from "./form/utils";
 
-// export type Product = {
-//   name: string;
-//   id: string;
-//   description: string;
-//   image: {
-//     id: string;
-//     url: string;
-//     productId: string;
-//   }[];
-//   price: number;
-//   condition: string;
-//   category: string;
-//   location: string;
-// };
-
 type Props = {
   product: ProductFormValues;
 };
 
 const ProductCard: React.FC<Props> = ({ product }) => {
   const [isOpen, setIsOpen] = useState(false);
-  const deleteProduct = useDeleteProduct();
+  const { mutate } = useDeleteProduct();
 
   return (
     <TableRow>
@@ -84,24 +63,22 @@ const ProductCard: React.FC<Props> = ({ product }) => {
               Edit
             </DropdownMenuItem>
 
-            <DropdownMenuItem className="text-red-500 hover:bg-red-500/10">
-              <TrashIcon
-                className="mr-2 h-4 w-4"
-                onClick={() => deleteProduct(product?.id)}
-              />
+            <DropdownMenuItem
+              onClick={() => mutate({ id: product.id })}
+              className="text-red-500 hover:bg-red-500/10"
+            >
+              <TrashIcon className="mr-2 h-4 w-4" />
               Delete
             </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
       </TableCell>
       <Dialog open={isOpen} onOpenChange={setIsOpen}>
-        <DialogContent className="h-auto">
-          <EditProductModal
-            isOpen={isOpen}
-            setIsOpen={setIsOpen}
-            product={product}
-          />
-        </DialogContent>
+        <EditProductModal
+          isOpen={isOpen}
+          setIsOpen={setIsOpen}
+          product={product}
+        />
       </Dialog>
     </TableRow>
   );
@@ -121,7 +98,7 @@ const ProductList: React.FC<any> = ({ products }) => {
         </TableRow>
       </TableHeader>
       <TableBody>
-        {products?.map((product: any) => (
+        {products?.slice(0, 10)?.map((product: any) => (
           <ProductCard key={product?.id} product={product} />
         ))}
       </TableBody>
