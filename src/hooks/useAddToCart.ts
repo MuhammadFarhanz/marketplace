@@ -5,10 +5,17 @@ export const useAddToCart = () => {
   const { toast } = useToast();
 
   return api.product.addToCart.useMutation({
-    onSuccess() {
-      toast({
-        title: "Product added to cart succesfully",
-      });
+    onSuccess(data) {
+      if (data?.status == "exists") {
+        toast({
+          variant: "destructive",
+          title: data.message,
+        });
+      } else {
+        toast({
+          title: "Product added to cart succesfully",
+        });
+      }
     },
     onError() {
       toast({

@@ -32,7 +32,7 @@ const ProductCard = ({ item, handleRemove }: any) => (
     className="mb-2 flex h-32 flex-row rounded-sm border border-black bg-white"
   >
     <img
-      className="h-full min-w-32 transform object-cover"
+      className="h-full min-w-32 max-w-32 transform object-cover"
       src={item?.product?.image[0]?.url}
       alt="product image"
     />

@@ -18,9 +18,9 @@ const ProductLayout = ({
         className
       )}
     >
-      <div className="min-h-auto container flex w-full flex-row justify-center space-x-10">
+      <div className="min-h-auto flex w-full flex-row justify-center space-x-10 px-6 sm:container sm:px-0">
         {isFilterSidebarOn && <FilterSidebar />}
-        <div className="w-full pt-4">
+        <div className="w-full py-4">
           <div
             className={clsx(
               "grid grid-cols-2 gap-8 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5",

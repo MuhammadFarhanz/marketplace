@@ -1,8 +1,6 @@
 import { useFormik } from "formik";
 import { useRouter } from "next/router";
 import React, { useState } from "react";
-import { useSearchProduct } from "~/hooks/useSearchProduct";
-import { api } from "~/utils/api";
 
 const SearchInput = () => {
   const router = useRouter();
@@ -17,10 +15,10 @@ const SearchInput = () => {
   });
 
   return (
-    <div className="rounded-sm bg-black">
+    <div className="rounded-sm ">
       <form
         onSubmit={formik.handleSubmit}
-        className="border-1 relative flex h-1/2 w-full items-center overflow-hidden rounded-sm border border-black bg-white sm:h-11"
+        className=" relative flex w-full items-center overflow-hidden rounded-md border border-black bg-white sm:h-[39px]"
       >
         <div className="grid h-full w-12 place-items-center text-[#9E9E9E]">
           <svg

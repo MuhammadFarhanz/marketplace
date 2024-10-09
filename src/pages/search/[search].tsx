@@ -18,7 +18,6 @@ function index() {
       <ProductLayout isFilterSidebarOn={true}>
         <ProductList products={products} isLoading={isLoading} />
       </ProductLayout>
-      <Footer />
     </>
   );
 }

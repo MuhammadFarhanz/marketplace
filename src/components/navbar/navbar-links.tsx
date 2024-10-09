@@ -17,7 +17,7 @@ import { Button } from "../ui/button";
 
 const DropdownContent = ({ sessionData }: any) => (
   <>
-    <div className="px-4 py-3 text-sm text-gray-900">
+    <div className="px-4 py-3 text-sm">
       <div>{sessionData.user.name}</div>
       <div className="truncate font-medium">{sessionData.user.email}</div>
     </div>
@@ -26,21 +26,46 @@ const DropdownContent = ({ sessionData }: any) => (
       className="text-sm text-gray-700"
       aria-labelledby="dropdownInformationButton"
     >
+      <li className="block sm:hidden">
+        <Link
+          href="/chat"
+          className="block px-4 py-2 hover:bg-[#ffb2ef]  hover:text-black"
+        >
+          Chat
+        </Link>
+      </li>
+
+      <li className="block sm:hidden">
+        <Link
+          href="/cart"
+          className="block px-4 py-2 hover:bg-[#ffb2ef]  hover:text-black"
+        >
+          Cart
+        </Link>
+      </li>
+
       <li>
         <Link
           href="/dashboard"
-          className="block px-4 py-2 hover:bg-black hover:text-white"
+          className="block px-4 py-2 hover:bg-[#ffb2ef]  hover:text-black"
         >
           Dashboard
         </Link>
       </li>
+
       <li>
-        <a href="#" className="block px-4 py-2 hover:bg-black hover:text-white">
+        <a
+          href="#"
+          className="block px-4 py-2 hover:bg-[#ffb2ef]  hover:text-black"
+        >
           Settings
         </a>
       </li>
       <li>
-        <a href="#" className="block px-4 py-2 hover:bg-black hover:text-white">
+        <a
+          href="#"
+          className="block px-4 py-2 hover:bg-[#ffb2ef]  hover:text-black"
+        >
           Earnings
         </a>
       </li>
@@ -48,7 +73,7 @@ const DropdownContent = ({ sessionData }: any) => (
     <DropdownMenuSeparator />
     <button
       onClick={() => signOut()}
-      className="flex w-full flex-row px-4 py-4 text-sm hover:bg-black hover:text-white"
+      className="flex w-full flex-row px-4 py-4 text-sm hover:bg-[#ffb2ef]  hover:text-black"
     >
       <LogOutIcon className="h-5 w-5" />
       <p className="ml-2">Sign out</p>
@@ -57,7 +82,7 @@ const DropdownContent = ({ sessionData }: any) => (
 );
 
 const AuthenticatedLinks = () => (
-  <>
+  <div className="hidden sm:flex">
     <NavigationMenuItem>
       <Link
         href="/cart"
@@ -82,7 +107,7 @@ const AuthenticatedLinks = () => (
         <Mail className="h-7 w-7" strokeWidth={1.5} />
       </Link>
     </NavigationMenuItem>
-  </>
+  </div>
 );
 
 const SignInButton = () => (
@@ -104,7 +129,7 @@ const ProfileDropdown = ({ sessionData }: any) => (
         </Avatar>
       </div>
     </NavigationMenuTrigger>
-    <NavigationMenuContent className="rounded-sm p-0 shadow-none">
+    <NavigationMenuContent className="m-0 p-0 shadow-none outline-0 ">
       <DropdownContent sessionData={sessionData} />
     </NavigationMenuContent>
   </NavigationMenuItem>
@@ -131,7 +156,7 @@ const NavbarLinks = () => {
   }
 
   return (
-    <div className="flex h-full items-center">
+    <div className="flex h-full items-center sm:left-0  [&_div.absolute]:left-[-10rem] sm:[&_div.absolute]:left-[0rem]">
       <NavigationMenu>
         <NavigationMenuList className="flex flex-row items-center space-x-1 p-0 font-medium">
           {status == "authenticated" ? (

@@ -29,7 +29,7 @@ const ProductView: NextPage = () => {
         <link rel="icon" href="/favicon.ico" />
       </Head>
       <main className="font-custom flex min-h-screen flex-col">
-        <div className="container m-4 mx-auto sm:mt-10">
+        <div className="relative m-auto w-full py-6 pt-0 sm:container  sm:m-4 sm:mx-auto sm:mt-10 sm:py-0">
           {data ? (
             <ProductDetails
               product={data}

@@ -103,18 +103,29 @@ const ProductDetails = ({
         </div>
       </div>
 
-      <div className="">
-        <div className="mt-20 flex w-full items-center px-1 text-2xl font-bold">
-          <p className="whitespace-nowrap">Similar listings</p>
-          <div className="ml-3 flex-1">
-            <Separator className="h-[2px] w-full bg-gray-300" />
+      <>
+        <div className=" bg-[#F4F4F0] p-3 pt-10">
+          <div className=" container  p-0 ">
+            <div className="flex justify-between">
+              <h1 className="text-xl font-bold tracking-wide text-black ">
+                Similiar listings
+              </h1>
+              <div>
+                <img
+                  className="w-[30px] sm:w-[30px]"
+                  src={"/assets/icon_arrow.svg"}
+                  alt="star"
+                />
+              </div>
+            </div>
+            <Separator className="mt-3 bg-black" />
           </div>
         </div>
 
-        <ProductLayout className="z-0 min-h-0" isFilterSidebarOn={false}>
+        <ProductLayout className="z-0 min-h-0 " isFilterSidebarOn={false}>
           <ProductList products={data} isLoading={isLoading} />
         </ProductLayout>
-      </div>
+      </>
     </>
   );
 };
