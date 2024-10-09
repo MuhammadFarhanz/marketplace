@@ -1,9 +1,13 @@
+import { PutObjectCommand, S3Client } from "@aws-sdk/client-s3";
 import { z } from "zod";
+import { env } from "~/env.mjs";
 import {
   createTRPCRouter,
   protectedProcedure,
   publicProcedure,
 } from "~/server/api/trpc";
+import { s3Client } from "../s3";
+import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
 
 export const productRouter = createTRPCRouter({
   getAll: publicProcedure.query(({ ctx }) => {
@@ -46,22 +50,116 @@ export const productRouter = createTRPCRouter({
         condition: z.string(),
         location: z.string(),
         category: z.string(),
+        file: z.array(z.any()),
       })
     )
     .mutation(async ({ input, ctx }) => {
-      const images = input.image.map((imageUrl) => ({ url: imageUrl }));
+      const { name, description, price, file, condition, location, category } =
+        input;
+
       const product = await ctx.prisma.product.create({
         data: {
-          name: input.name,
-          price: input.price,
-          description: input.description,
+          name: name,
+          price: price,
+          description: description,
           image: {
-            create: images,
+            create: file.map((fileData) => ({
+              url: `${env.S3_SERVER_ENDPOINT}/${
+                env.S3_BUCKET
+              }/${encodeURIComponent(fileData.key)}`,
+              file: {
+                create: {
+                  fileName: fileData.fileName,
+                  fileType: fileData.fileType,
+                  url: fileData.key,
+                  fileSize: fileData.fileSize,
+                },
+              },
+            })),
           },
-          condition: input.condition,
-          location: input.location,
-          category: input.category,
+          condition: condition,
+          location: location,
+          category: category,
           authorId: ctx.session.user.id,
+        },
+      });
+      return product;
+    }),
+
+  update: protectedProcedure
+    .input(
+      z.object({
+        id: z.string(),
+        newProductData: z.object({
+          name: z.string(),
+          description: z.string(),
+          price: z.number(),
+          category: z.string(),
+          location: z.string(),
+          image: z.array(z.string()).optional(),
+          file: z.any().optional(),
+        }),
+      })
+    )
+    .mutation(async ({ input, ctx }) => {
+      const { name, description, price, file, location, category } =
+        input.newProductData;
+
+      const existingImages = await ctx.prisma.image.findMany({
+        where: { productId: input.id },
+        select: { url: true },
+      });
+
+      const existingImageUrls = existingImages.map((img) => img.url);
+      const newImageUrls = input.newProductData.image || [];
+
+      const imagesToDelete = existingImageUrls.filter(
+        (url) => !newImageUrls.includes(url)
+      );
+
+      // Only delete the images that are no longer part of the new image set
+      if (imagesToDelete.length > 0) {
+        await ctx.prisma.image.deleteMany({
+          where: {
+            productId: input.id,
+            url: { in: imagesToDelete },
+          },
+        });
+      }
+
+      const productData: any = {
+        name: name,
+        description: description,
+        price: price,
+        category: category,
+        location: location,
+      };
+
+      if (file && file.length > 0) {
+        productData.image = {
+          create: file.map((fileData: any) => ({
+            url: `${env.S3_SERVER_ENDPOINT}/${
+              env.S3_BUCKET
+            }/${encodeURIComponent(fileData.key)}`,
+            file: {
+              create: {
+                fileName: fileData.fileName,
+                fileType: fileData.fileType,
+                url: fileData.key,
+                fileSize: fileData.fileSize,
+              },
+            },
+          })),
+        };
+      }
+
+      const product = await ctx.prisma.product.update({
+        where: {
+          id: input.id,
+        },
+        data: productData,
+        include: {
+          image: true,
         },
       });
       return product;
@@ -76,7 +174,11 @@ export const productRouter = createTRPCRouter({
         name: true,
         id: true,
         description: true,
-        image: true,
+        image: {
+          include: {
+            file: true,
+          },
+        },
         price: true,
         condition: true,
         category: true,
@@ -84,51 +186,6 @@ export const productRouter = createTRPCRouter({
       },
     });
   }),
-  update: protectedProcedure
-    .input(
-      z.object({
-        id: z.string(),
-        newProductData: z.object({
-          name: z.string(),
-          description: z.string(),
-          price: z.number(),
-          category: z.string(),
-          location: z.string(),
-          image: z.array(z.string()),
-        }),
-      })
-    )
-    .mutation(async ({ input, ctx }) => {
-      await ctx.prisma.image.deleteMany({
-        where: { productId: input.id },
-      });
-
-      // Create image objects for the new images
-      const images = input.newProductData.image.map((imageUrl) => ({
-        url: imageUrl,
-      }));
-
-      const product = await ctx.prisma.product.update({
-        where: {
-          id: input.id,
-        },
-        data: {
-          name: input.newProductData.name,
-          description: input.newProductData.description,
-          price: input.newProductData.price,
-          category: input.newProductData.category,
-          location: input.newProductData.location,
-          image: {
-            create: images,
-          },
-        },
-        include: {
-          image: true,
-        },
-      });
-      return product;
-    }),
-
   delete: protectedProcedure
     .input(z.object({ id: z.string() }))
     .mutation(async ({ ctx, input }) => {
@@ -177,7 +234,7 @@ export const productRouter = createTRPCRouter({
             userId,
             totalCart: 0,
           },
-          include: { items: true }, // Make sure to include items when creating a new cart
+          include: { items: true },
         }));
 
       let cartItem = await ctx.prisma.cartItem.findFirst({
@@ -188,13 +245,11 @@ export const productRouter = createTRPCRouter({
       });
 
       if (cartItem) {
-        // Return early if the product is already in the cart
         return {
           status: "exists",
           message: "Item is already in the cart",
         };
       } else {
-        // Add new product to the cart
         cartItem = await ctx.prisma.cartItem.create({
           data: {
             cartId: cart.id,
@@ -249,13 +304,48 @@ export const productRouter = createTRPCRouter({
 
   getRandomProducts: protectedProcedure.query(({ ctx }) => {
     return ctx.prisma.product.findMany({
-      take: 6, // Limit the number of products to 6
+      take: 6,
       orderBy: {
-        createdAt: "desc", // You can change this to a random order if desired
+        createdAt: "desc",
       },
       include: {
         image: true,
       },
     });
   }),
+
+  generatePresignedUrls: protectedProcedure
+    .input(
+      z.object({
+        files: z.array(
+          z.object({
+            fileName: z.string(),
+            fileType: z.string(),
+          })
+        ),
+      })
+    )
+    .mutation(async ({ input }) => {
+      const { files } = input;
+      const bucketName = env.S3_BUCKET;
+
+      const presignedUrls = await Promise.all(
+        files.map(async (file) => {
+          const command = new PutObjectCommand({
+            Bucket: bucketName,
+            Key: file.fileName,
+            ContentType: file.fileType,
+            ACL: "public-read",
+          });
+
+          return getSignedUrl(s3Client, command, { expiresIn: 3000 });
+        })
+      );
+
+      // Return URLs for front-end to use, including real URLs
+      return files.map((file, index) => ({
+        url: presignedUrls[index],
+        key: file.fileName,
+      }));
+    }),
 });
